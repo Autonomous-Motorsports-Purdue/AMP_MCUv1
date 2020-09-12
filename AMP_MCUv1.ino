@@ -14,4 +14,11 @@ void loop()
     delay(1000);                     // wait for a second
     digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
     delay(1000);                     // wait for a second
+    if (serial_pkt_recieved)
+    {
+        if (kart_control())
+        {
+            serial_pkt_recieved = 0; //packet recieved
+        }
+    }
 }

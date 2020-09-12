@@ -20,8 +20,9 @@ const uint8_t DATA_LEN_3 = 0xe3;
 uint8_t brake_buf;    //holds incoming breaking data
 uint8_t throttle_buf; //holds incoming throttle data
 uint8_t steering_buf; //holds incoming steering data
-
 uint8_t serial_crc;
+
+uint8_t serial_pkt_recieved; //flag to indicate new serial packet
 
 enum SERIAL_STATE
 {
@@ -38,14 +39,23 @@ enum SERIAL_STATE
 
 SERIAL_STATE cur_serial_state;
 
-void reset_serial()
+void restart_serial()
 {
+    //move serial buffers into kart control vars
+    kart_brake = brake_buf;
+    kart_throttle = throttle_buf;
+    kart_steering = steering_buf;
+
+    //clear buffers
     brake_buf = 0;
     throttle_buf = 0;
-    serial_buf = 0;
+    steering_buf = 0;
+
+    //clear crc
     serial_crc = 0;
 
-    //put some sort of flag to indicate packet has been read into buffer
+    //set serial pkt recieved flag
+    serial_pkt_recieved = 1;
 }
 
 //serial rx interrupt callback function
@@ -81,7 +91,7 @@ static void handleRxChar(uint8_t cmd)
             serial_crc += cmd;
             cur_serial_state = DATA_LEN_SEEKING;
         }
-        else if (cmd == ID_KILL && req_kart_state_change(KILL_STATE))
+        else if (cmd == ID_KILL && req_kart_state_change(ERROR))
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
@@ -119,7 +129,7 @@ static void handleRxChar(uint8_t cmd)
     case BRAKE_DATA_SEEKING:
         valid_cmd_byte = 1;
         serial_crc += cmd;
-        brake_buff = cmd;
+        brake_buf = cmd;
         cur_serial_state = THROTTLE_DATA_SEEKING;
         break;
     case THROTTLE_DATA_SEEKING:
@@ -144,8 +154,8 @@ static void handleRxChar(uint8_t cmd)
     case STOP_SEEKING:
         if (cmd == STOP_BYTE)
         {
-            valid_cmd = 1;
-            reset_serial();
+            valid_cmd_byte = 1;
+            restart_serial();
         }
         break;
     }
@@ -160,9 +170,9 @@ bool serial_init()
 {
     cur_serial_state = DEFAULT_STATE;
     serial_crc = 0;
-    brake_byte = 0;
-    throttle_byte = 0;
-    steering_byte = 0;
+    brake_buf = 0;
+    throttle_buf = 0;
+    steering_buf = 0;
     NeoSerial.attachInterrupt(handleRxChar);
     NeoSerial.begin(BAUD_RATE); // Instead of 'Serial'
     return true;
