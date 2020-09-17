@@ -1,0 +1,77 @@
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+/* The incoming packet I assumed would have the first 8 bits as packet ID
+* The next three bits to signify steering direction (100: left, 010: center, 001: right) 
+* The next bit to signify throttle on or throttle off.
+* The next bit for break on or break off
+* Then one final bit for the E-Stop Packet
+* Example packet for no steering, only throttle on and breaking off: 10110001.0001
+*/
+int cart_state;
+String readString;
+
+void setup()
+{
+  Serial.begin(9600);
+  cart_state = 2; // Default State
+}
+
+void loop()
+{
+  while (Serial.available()) 
+  {
+  	char c = Serial.read();  //gets one byte from serial buffer
+    readString += c; //makes the String readString
+    delay(2);  //slow looping to allow buffer to fill with next character
+  } 
+  
+//  int error_check = cyclic_check(readString); 
+  int error_check = 0;
+  
+  if ((readString.length() < 8) || (error_check == 1) || (readString.length() == 14))
+  {
+    cart_state = 4;
+  }  
+  else if ((readString.length() > 8) && (readString.length() < 14))
+  {
+    cart_state = 3;
+  }
+  else if (readString.length() == 8)
+  {
+    cart_state = 2;
+  }
+  
+  if (readString.length() >0) 
+  {
+      switch (cart_state)
+    {
+      case 1: // If cart state is set to Default
+      {
+        Serial.println("cart state changed to Default");
+        break;
+      }
+      case 2: // If cart state is set to Enabled
+      {
+        Serial.println("cart state changed to Enabled");
+        break;
+      }
+      case 3: // If cart state is set to Drive
+      {
+        Serial.println("cart state changed to Drive");
+        break;
+      }
+      case 4: // If cart state is set to Error
+      {
+        Serial.println("cart state changed to Error");
+        break;
+      }
+    }
+    readString="";
+  }
+}
+
+// int cyclic_check(int readString)
+//{
+//	int key = 1101;  
+//}
