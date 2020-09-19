@@ -53,7 +53,7 @@ void restart_serial()
     kart_steering = steering_buf;
 
     //send the recieved data back to the jetson
-    sendUpStream();
+    //sendUpStream();
 
     //clear buffers
     brake_buf = 0;

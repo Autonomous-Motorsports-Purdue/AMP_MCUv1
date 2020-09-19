@@ -46,20 +46,20 @@ bool req_kart_state_change(KART_STATE req)
         if (req == ENABLED)
         {
             cur_kart_state = ENABLED;
-            SerialUSB.print(KART_ENABLE_ACK);
+//            SerialUSB.print(KART_ENABLE_ACK);
             return true;
         }
         else if (req == ERROR)
         {
             cur_kart_state = ERROR;
-            SerialUSB.print(KART_ERROR_ACK);
+//            SerialUSB.print(KART_ERROR_ACK);
         }
         break;
     case ENABLED:
         if (req == ERROR)
         {
             cur_kart_state = ERROR;
-            SerialUSB.print(KART_ERROR_ACK);
+//            SerialUSB.print(KART_ERROR_ACK);
             return true;
         }
         break;
@@ -67,7 +67,7 @@ bool req_kart_state_change(KART_STATE req)
         if (req == IDLE)
         {
             cur_kart_state = IDLE;
-            SerialUSB.print(KART_ERROR_ACK);
+//            SerialUSB.print(KART_ERROR_ACK);
         }
         break;
     }
