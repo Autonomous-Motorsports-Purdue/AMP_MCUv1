@@ -25,16 +25,16 @@ KART_STATE cur_kart_state;
 bool kart_init()
 {
     cur_kart_state = IDLE;
-    NeoSerial.print(KART_IDLE_ACK);
+    SerialUSB.print(KART_IDLE_ACK);
     return true;
 }
 
 bool kart_control()
 {
-    NeoSerial.print(KART_CTRL_ACK);
-    NeoSerial.print(kart_brake);
-    NeoSerial.print(kart_throttle);
-    NeoSerial.print(kart_steering);
+    SerialUSB.print(KART_CTRL_ACK);
+    SerialUSB.print(kart_brake);
+    SerialUSB.print(kart_throttle);
+    SerialUSB.print(kart_steering);
     return true;
 }
 
@@ -46,20 +46,20 @@ bool req_kart_state_change(KART_STATE req)
         if (req == ENABLED)
         {
             cur_kart_state = ENABLED;
-            NeoSerial.print(KART_ENABLE_ACK);
+            SerialUSB.print(KART_ENABLE_ACK);
             return true;
         }
         else if (req == ERROR)
         {
             cur_kart_state = ERROR;
-            NeoSerial.print(KART_ERROR_ACK);
+            SerialUSB.print(KART_ERROR_ACK);
         }
         break;
     case ENABLED:
         if (req == ERROR)
         {
             cur_kart_state = ERROR;
-            NeoSerial.print(KART_ERROR_ACK);
+            SerialUSB.print(KART_ERROR_ACK);
             return true;
         }
         break;
@@ -67,7 +67,7 @@ bool req_kart_state_change(KART_STATE req)
         if (req == IDLE)
         {
             cur_kart_state = IDLE;
-            NeoSerial.print(KART_ERROR_ACK);
+            SerialUSB.print(KART_ERROR_ACK);
         }
         break;
     }

@@ -3,7 +3,7 @@
 
 #include "kart.h"
 
-#define BAUD_RATE 9600
+#define BAUD_RATE 4800
 
 //serial byte identifiers
 const uint8_t START_BYTE = 0x02;
@@ -26,15 +26,15 @@ uint8_t serial_pkt_recieved; //flag to indicate new serial packet
 
 enum SERIAL_STATE
 {
-    DEFAULT_STATE,
-    ID_SEEKING,
-    KILL_STATE,
-    DATA_LEN_SEEKING,
-    BRAKE_DATA_SEEKING,
-    THROTTLE_DATA_SEEKING,
-    STEERING_DATA_SEEKING,
-    CRC_SEEKING,
-    STOP_SEEKING
+    DEFAULT_STATE = 0,
+    ID_SEEKING = 1,
+    KILL_STATE = 2,
+    DATA_LEN_SEEKING = 3,
+    BRAKE_DATA_SEEKING = 4,
+    THROTTLE_DATA_SEEKING = 5,
+    STEERING_DATA_SEEKING = 6,
+    CRC_SEEKING = 7,
+    STOP_SEEKING = 8
 };
 
 SERIAL_STATE cur_serial_state;
@@ -56,16 +56,20 @@ void restart_serial()
 
     //set serial pkt recieved flag
     serial_pkt_recieved = 1;
+
+    //reset the state to default
+    cur_serial_state = DEFAULT_STATE;
 }
 
 //serial rx interrupt callback function
 
 //be carefule that this function uses the cur_serial_state variable
 //and not the cur_kart_state variable (easy to confuse maybe rename)
-static void handleRxChar(uint8_t cmd)
+void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
 {
-    NeoSerial.println(cmd); //echoback serial for debugging
-
+    //NeoSerial.println(cmd); //echoback serial for debugging
+    int cmd = SerialUSB.read();
+    SerialUSB.println(cmd,HEX);
     int valid_cmd_byte = 0;
 
     switch (cur_serial_state)
@@ -159,6 +163,8 @@ static void handleRxChar(uint8_t cmd)
         }
         break;
     }
+    SerialUSB.print("serial state: ");
+    SerialUSB.println(cur_serial_state);
 
     if (!valid_cmd_byte)
     {
@@ -173,8 +179,16 @@ bool serial_init()
     brake_buf = 0;
     throttle_buf = 0;
     steering_buf = 0;
-    NeoSerial.attachInterrupt(handleRxChar);
-    NeoSerial.begin(BAUD_RATE); // Instead of 'Serial'
+    SerialUSB.begin(4800);
+    while(!SerialUSB)
+    {
+      ; // wait for Serial prt to connect. Needed for native USB
+    }
+    SerialUSB.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
+//  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
+
+//    NeoSerial.attachInterrupt(handleRxChar);
+//    NeoSerial.begin(BAUD_RATE); // Instead of 'Serial'
     return true;
 }
 
