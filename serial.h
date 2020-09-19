@@ -5,6 +5,10 @@
 
 #define BAUD_RATE 4800
 
+//-----------local functions---------------------
+void sendUpStream(); //upstream data checking function
+//-----------------------------------------------
+
 //serial byte identifiers
 const uint8_t START_BYTE = 0x02;
 const uint8_t STOP_BYTE = 0x03;
@@ -17,9 +21,11 @@ const uint8_t DATA_LEN_2 = 0xe2;
 const uint8_t DATA_LEN_3 = 0xe3;
 
 //serial data byte buffers
-uint8_t brake_buf;    //holds incoming breaking data
-uint8_t throttle_buf; //holds incoming throttle data
-uint8_t steering_buf; //holds incoming steering data
+uint8_t serial_id_buf; //holds incoming packet id
+uint8_t data_len_buf;  //holds incoming length data
+uint8_t brake_buf;     //holds incoming breaking data
+uint8_t throttle_buf;  //holds incoming throttle data
+uint8_t steering_buf;  //holds incoming steering data
 uint8_t serial_crc;
 
 uint8_t serial_pkt_recieved; //flag to indicate new serial packet
@@ -46,6 +52,9 @@ void restart_serial()
     kart_throttle = throttle_buf;
     kart_steering = steering_buf;
 
+    //send the recieved data back to the jetson
+    sendUpStream();
+
     //clear buffers
     brake_buf = 0;
     throttle_buf = 0;
@@ -59,6 +68,37 @@ void restart_serial()
 
     //reset the state to default
     cur_serial_state = DEFAULT_STATE;
+}
+
+void sendUpStream()
+{
+    SerialUSB.write(START_BYTE);
+    switch(serial_id_buf)
+    {
+    case ID_ENABLE:
+        SerialUSB.write(ID_ENABLE);
+        break;
+    case ID_CONTROL:
+        SerialUSB.write(ID_CONTROL);
+        SerialUSB.write(data_len_buf);
+        switch(data_len_buf)
+        {
+        case DATA_LEN_3:
+            SerialUSB.write(brake_buf);
+        case DATA_LEN_2:
+            SerialUSB.write(throttle_buf);
+        case DATA_LEN_1:
+            SerialUSB.write(steering_buf);
+            break;
+        }
+        break;
+    case ID_KILL:
+        SerialUSB.write(ID_KILL);
+        //not entirely implemented
+        break;    
+    }
+    SerialUSB.write(serial_crc);
+    SerialUSB.write(STOP_BYTE);
 }
 
 //serial rx interrupt callback function
@@ -87,18 +127,21 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            serial_id_buf = ID_ENABLE;
             cur_serial_state = CRC_SEEKING;
         }
         else if (cmd == ID_CONTROL && cur_kart_state == ENABLED)
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            serial_id_buf = ID_CONTROL;
             cur_serial_state = DATA_LEN_SEEKING;
         }
         else if (cmd == ID_KILL && req_kart_state_change(ERROR))
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            serial_id_buf = ID_KILL;
             cur_serial_state = KILL_STATE;
         }
         break;
@@ -115,18 +158,21 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            data_len_buf = DATA_LEN_3;
             cur_serial_state = BRAKE_DATA_SEEKING;
         }
         else if (cmd == DATA_LEN_2)
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            data_len_buf = DATA_LEN_2;
             cur_serial_state = THROTTLE_DATA_SEEKING;
         }
         else if (cmd == DATA_LEN_1)
         {
             valid_cmd_byte = 1;
             serial_crc += cmd;
+            data_len_buf = DATA_LEN_1;
             cur_serial_state = STEERING_DATA_SEEKING;
         }
         break;
@@ -179,6 +225,7 @@ bool serial_init()
     brake_buf = 0;
     throttle_buf = 0;
     steering_buf = 0;
+    serial_id_buf = 0;
     SerialUSB.begin(4800);
     while(!SerialUSB)
     {
