@@ -55,6 +55,12 @@ void restart_serial()
     //send the recieved data back to the jetson
     //sendUpStream();
 
+   //notify kart to update control
+    if(serial_id_buf == ID_CONTROL)
+    {
+        control_flag = 1;
+    }
+
     //clear buffers
     brake_buf = 0;
     throttle_buf = 0;

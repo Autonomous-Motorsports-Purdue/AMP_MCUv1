@@ -7,6 +7,8 @@ uint8_t kart_brake;    //holds kart braking control data
 uint8_t kart_throttle; //holds kart throttle control data
 uint8_t kart_steering; //holds kart steering control data
 
+uint8_t control_flag; //shows if control has been updated
+
 //serial state acknowledge bytes
 const uint8_t KART_IDLE_ACK = 0xa0;
 const uint8_t KART_ENABLE_ACK = 0xa1;
@@ -25,16 +27,16 @@ KART_STATE cur_kart_state;
 bool kart_init()
 {
     cur_kart_state = IDLE;
-    SerialUSB.print(KART_IDLE_ACK);
+    control_flag = 0;
     return true;
 }
 
 bool kart_control()
 {
-    SerialUSB.print(KART_CTRL_ACK);
-    SerialUSB.print(kart_brake);
-    SerialUSB.print(kart_throttle);
-    SerialUSB.print(kart_steering);
+    SerialUSB.print(kart_brake, HEX);
+    SerialUSB.print(kart_throttle, HEX);
+    SerialUSB.print(kart_steering, HEX);
+    control_flag = 0;
     return true;
 }
 

@@ -18,8 +18,9 @@ void loop()
     {
         handleRxChar(); //deal with the incoming data    
     }
-//    if (kart_control())
-//    {
-//        serial_pkt_recieved = 0; //packet recieved
-//    }
+    if (control_flag)
+    {
+        kart_control();
+        serial_pkt_recieved = 0; //packet recieved
+    }
 }
