@@ -1,11 +1,16 @@
 //#include <NeoHWSerial.h>
 #include "serial.h"
 #include "kart.h"
+#include "brake.h"
+#include "steering.h"
+#include "throttle.h"
 
 void setup()
 {
     serial_init();
     pinMode(LED_BUILTIN, OUTPUT);
+
+    analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 }
 
 void loop()
