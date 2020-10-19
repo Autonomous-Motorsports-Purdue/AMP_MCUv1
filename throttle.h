@@ -3,8 +3,8 @@
 
 #define DAC_PIN DAC0 //DAC output
 
-#define THROTTLE_PACKET_MAX 0x00FF //max value expected from Jetson
-#define THROTTLE_PACKET_MIN 0x0000  //min value expected form Jetson
+#define THROTTLE_PACKET_MAX 255 //max value expected from Jetson
+#define THROTTLE_PACKET_MIN 0   //min value expected form Jetson
 //Range of the arduino due DAC is from 0.55V - 2.75V
 #define THROTTLE_CONTROL_MAX 0x0D54 //max value commanded from Throttle DAC, Decimal Number: 3412
 #define THROTTLE_CONTROL_MIN 0x02AB //min value commanded from Throttle DAC, Decimal Number: 683
