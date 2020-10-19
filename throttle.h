@@ -19,8 +19,8 @@ bool set_throttle_raw(int throttleRequest)
   // Perform Scaling to Voltage Value
   int throttleCommand = THROTTLE_CONTROL_MIN + (throttleRequest - THROTTLE_PACKET_MIN) * (THROTTLE_CONTROL_MAX - THROTTLE_CONTROL_MIN) / (THROTTLE_PACKET_MAX - THROTTLE_PACKET_MIN);
 
-  SerialUSB.print("throttleCommand that that has been assembled is: ");
-  SerialUSB.println(throttleCommand);
+  //SerialUSB.print("throttleCommand that that has been assembled is: ");
+  //SerialUSB.println(throttleCommand);
 
   analogWrite(DAC_PIN, throttleCommand);
 

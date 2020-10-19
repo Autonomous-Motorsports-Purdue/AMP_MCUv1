@@ -115,7 +115,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
 {
     //NeoSerial.println(cmd); //echoback serial for debugging
     int cmd = SerialUSB.read();
-    SerialUSB.println(cmd,HEX);
+    //SerialUSB.println(cmd,HEX);
     int valid_cmd_byte = 0;
 
     switch (cur_serial_state)
@@ -215,8 +215,8 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         }
         break;
     }
-    SerialUSB.print("serial state: ");
-    SerialUSB.println(cur_serial_state);
+    //SerialUSB.print("serial state: ");
+    //SerialUSB.println(cur_serial_state);
 
     if (!valid_cmd_byte)
     {
@@ -232,12 +232,15 @@ bool serial_init()
     throttle_buf = 0;
     steering_buf = 0;
     serial_id_buf = 0;
-    SerialUSB.begin(4800);
+
+    pwm_pin44.start(33333,33333/2); //center the steering
+    
+    //SerialUSB.begin(4800);
     while(!SerialUSB)
     {
       ; // wait for Serial prt to connect. Needed for native USB
     }
-    SerialUSB.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
+    //SerialUSB.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
 //  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 
 //    NeoSerial.attachInterrupt(handleRxChar);
