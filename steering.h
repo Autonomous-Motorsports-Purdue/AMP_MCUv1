@@ -1,14 +1,12 @@
 #ifndef STEERING_H
 #define STEERING_H
 
-#define STEERING_PIN 35 //Steering
-
 #include "pwm_lib.h"
 #include "tc_lib.h"
 
 using namespace arduino_due::pwm_lib;
 
-pwm<pwm_pin::PWMH5_PC19> pwm_pin44;
+pwm<pwm_pin::PWMH5_PC19> pwm_pin44; //steering pin is 44
 
 // 1kHz (left)
 // 3kHz (center)
