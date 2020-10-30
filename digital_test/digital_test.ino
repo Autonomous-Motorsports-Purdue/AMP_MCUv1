@@ -5,19 +5,21 @@
 #define EN_P 47 //Enable
 #define INPUT_A 41 //input a for steeering motor
 
-void setup() {
-  // put your setup code here, to run once:
-  SerialUSB.begin(4800);
   int fs1 = 0;
   int fwd = 0;
   int rev = 0;
   int enp = 0;
   int inp = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  SerialUSB.begin(4800);
+
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  int x = SerialUSB.parseInt()
+  int x = SerialUSB.parseInt();
   switch(x)
   {
     case 0:
@@ -37,7 +39,7 @@ void loop() {
       break;
 
     case 4:
-      inp = (inp + 1)%2
+      inp = (inp + 1)%2;
   }
 
 
