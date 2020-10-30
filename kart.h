@@ -13,6 +13,8 @@
 #define EN_P 47    //Enable
 #define INPUT_A 41 //input a for steeering motor
 
+#define MOTOR_CONTROL_DELAY delay(1000);
+
 uint8_t kart_brake;    //holds kart braking control data
 uint8_t kart_throttle; //holds kart throttle control data
 uint8_t kart_steering; //holds kart steering control data
@@ -46,11 +48,12 @@ void set_idle()
 void set_enabled()
 {
     digitalWrite(FS1, HIGH);
-    //    digitalWrite(KS1, HIGH);
-    digitalWrite(FWD, LOW);
     digitalWrite(REV, LOW);
     digitalWrite(EN_P, LOW);
     digitalWrite(INPUT_A, HIGH);
+    //    digitalWrite(KS1, HIGH);
+    MOTOR_CONTROL_DELAY
+    digitalWrite(FWD, HIGH);
 }
 
 void set_error()
@@ -70,6 +73,14 @@ KART_STATE cur_kart_state;
 
 bool kart_init()
 {
+    pinMode(FS1, OUTPUT);
+    pinMode(FWD, OUTPUT);
+    pinMode(REV, OUTPUT);
+    pinMode(EN_P, OUTPUT);
+    pinMode(INPUT_A, OUTPUT);
+
+    set_idle();
+  
     cur_kart_state = IDLE;
     control_flag = 0;
     return true;

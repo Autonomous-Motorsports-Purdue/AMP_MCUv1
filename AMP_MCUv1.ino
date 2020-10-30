@@ -7,12 +7,15 @@
 
 void setup()
 {
+    kart_init();
+
     serial_init();
+
+    steering_init();
+
     pinMode(LED_BUILTIN, OUTPUT);
 
     analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
-
-    set_idle();
 }
 
 void loop()
