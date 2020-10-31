@@ -13,9 +13,9 @@ void setup()
 
     steering_init();
 
-    pinMode(LED_BUILTIN, OUTPUT);
+    throttle_init();
 
-    analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
+    pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
