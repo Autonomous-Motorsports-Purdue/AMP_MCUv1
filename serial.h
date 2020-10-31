@@ -232,8 +232,6 @@ bool serial_init()
     throttle_buf = 0;
     steering_buf = 0;
     serial_id_buf = 0;
-
-    pwm_pin44.start(33333,33333/2); //center the steering
     
     //SerialUSB.begin(4800);
     while(!SerialUSB)

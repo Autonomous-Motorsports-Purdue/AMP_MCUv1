@@ -7,21 +7,26 @@
 
 void setup()
 {
-    serial_init();
-    pinMode(LED_BUILTIN, OUTPUT);
+    kart_init();
 
-    analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
+    serial_init();
+
+    steering_init();
+
+    throttle_init();
+
+    pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
 {
-//    digitalWrite(LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level)
-//    delay(1000);                     // wait for a second
-//    digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
-//    delay(1000);                     // wait for a second
-    if (SerialUSB.available())//was serial_pkt_recieved
+    //    digitalWrite(LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level)
+    //    delay(1000);                     // wait for a second
+    //    digitalWrite(LED_BUILTIN, LOW);  // turn the LED off by making the voltage LOW
+    //    delay(1000);                     // wait for a second
+    if (SerialUSB.available()) //was serial_pkt_recieved
     {
-        handleRxChar(); //deal with the incoming data    
+        handleRxChar(); //deal with the incoming data
     }
     if (control_flag)
     {

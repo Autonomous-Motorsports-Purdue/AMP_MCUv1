@@ -11,11 +11,11 @@
 
 bool set_throttle_raw(int throttleRequest)
 {
-  if(throttleRequest < THROTTLE_PACKET_MIN || throttleRequest > THROTTLE_PACKET_MAX)
+  if (throttleRequest < THROTTLE_PACKET_MIN || throttleRequest > THROTTLE_PACKET_MAX)
   {
     return false;
   }
-  
+
   // Perform Scaling to Voltage Value
   int throttleCommand = THROTTLE_CONTROL_MIN + (throttleRequest - THROTTLE_PACKET_MIN) * (THROTTLE_CONTROL_MAX - THROTTLE_CONTROL_MIN) / (THROTTLE_PACKET_MAX - THROTTLE_PACKET_MIN);
 
@@ -25,6 +25,13 @@ bool set_throttle_raw(int throttleRequest)
   analogWrite(DAC_PIN, throttleCommand);
 
   return true;
+}
+
+void throttle_init()
+{
+  pinMode(DAC_PIN, OUTPUT);
+
+  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 }
 
 #endif /* THROTTLE_H */

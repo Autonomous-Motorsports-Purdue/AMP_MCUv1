@@ -40,4 +40,8 @@ bool set_steering_raw(int steeringRequest)
   return true; 
 }
 
+void steering_init() {
+      pwm_pin44.start(33333,33333/2); //center the steering
+}
+
 #endif /* STEERING_H */
