@@ -1,8 +1,8 @@
 #ifndef BRAKE_H
 #define BRAKE_H
 
-#define BRAKE_PIN1 16 //Brake pin 1
-#define BRAKE_PIN2 17 //Brake pin 2
+#define BRAKE_PIN1 17 //Brake pin 1
+#define BRAKE_PIN2 16 //Brake pin 2
 
 
 bool set_brake_raw(int brakeRequest)
