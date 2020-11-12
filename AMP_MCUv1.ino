@@ -18,7 +18,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
-int on = 0;
+//int on = 0;
 void loop()
 {
     //    digitalWrite(LED_BUILTIN, HIGH); // turn the LED on (HIGH is the voltage level)
@@ -28,17 +28,17 @@ void loop()
     if (SerialUSB.available()) //was serial_pkt_recieved
     {
         handleRxChar(); //deal with the incoming data
-        on = 1;
+//        on = 1;
     }
-    if(on && SerialUSB)
-    {
-        while(true)
-        {
-            set_error();
-            kart_control();
-        }
-        
-    }
+//    if(on && !SerialUSB)
+//    {
+//        while(true)
+//        {
+//            set_error();
+//            kart_control();
+//        }
+//        
+//    }
     if (control_flag)
     {
         kart_control();
