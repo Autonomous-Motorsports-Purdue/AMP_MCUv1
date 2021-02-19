@@ -1,9 +1,12 @@
-//#include <NeoHWSerial.h>
+#include <DueTimer.h>
 #include "serial.h"
 #include "kart.h"
 #include "brake.h"
 #include "steering.h"
 #include "throttle.h"
+#include "interrupt.h"
+
+int connection = 0;
 
 void setup()
 {
@@ -16,6 +19,7 @@ void setup()
     throttle_init();
 
     pinMode(LED_BUILTIN, OUTPUT);
+
 }
 
 //int on = 0;
@@ -28,6 +32,11 @@ void loop()
     if (SerialUSB.available()) //was serial_pkt_recieved
     {
         handleRxChar(); //deal with the incoming data
+        if(!connection)
+        {
+            start_Interrupt();
+            connection = 1;
+        }
     }
 
     if (control_flag)
