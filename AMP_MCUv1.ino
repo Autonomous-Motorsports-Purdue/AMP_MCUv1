@@ -28,17 +28,8 @@ void loop()
     if (SerialUSB.available()) //was serial_pkt_recieved
     {
         handleRxChar(); //deal with the incoming data
-//        on = 1;
     }
-//    if(on && !SerialUSB)
-//    {
-//        while(true)
-//        {
-//            set_error();
-//            kart_control();
-//        }
-//        
-//    }
+
     if (control_flag)
     {
         kart_control();
