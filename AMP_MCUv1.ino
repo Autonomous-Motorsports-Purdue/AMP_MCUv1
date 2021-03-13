@@ -43,5 +43,6 @@ void loop()
     {
         kart_control();
         serial_pkt_recieved = 0; //packet recieved
+        inter = false;
     }
 }

@@ -10,8 +10,8 @@
 //#define KS1   //Key Switch
 #define FWD 29     //Forward
 #define REV 53     //Reverse
-#define EN_P 47    //Enable
-#define INPUT_A 41 //input a for steeering motor
+#define EN_P 47    //Enable DONT USE THIS
+#define INPUT_A 41 //input a for steeering motor DONT USE THIS
 
 #define MOTOR_CONTROL_DELAY delay(1000);
 
