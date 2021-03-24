@@ -58,15 +58,19 @@ void set_enabled()
 
 void set_error()
 {
-    digitalWrite(FS1, LOW);
-    //    digitalWrite(KS1, HIGH);
-    digitalWrite(FWD, LOW);
-    digitalWrite(REV, LOW);
-    digitalWrite(EN_P, LOW);
-    digitalWrite(INPUT_A, LOW);
-    set_brake_raw(255);
-    set_throttle_raw(0);
-    set_steering_raw(255 / 2);
+    while(true)
+    {
+        digitalWrite(LED_BUILTIN, HIGH);
+        digitalWrite(FS1, LOW);
+        //    digitalWrite(KS1, HIGH);
+        digitalWrite(FWD, LOW);
+        digitalWrite(REV, LOW);
+        digitalWrite(EN_P, LOW);
+        digitalWrite(INPUT_A, LOW);
+        set_brake_raw(255);
+        set_throttle_raw(0);
+        set_steering_raw(255 / 2);
+    }
 }
 
 KART_STATE cur_kart_state;

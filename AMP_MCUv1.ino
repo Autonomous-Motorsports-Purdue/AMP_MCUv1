@@ -10,6 +10,8 @@ int connection = 0;
 
 void setup()
 {
+    pinMode(13, OUTPUT);
+  
     kart_init();
 
     serial_init();
@@ -41,8 +43,8 @@ void loop()
 
     if (control_flag)
     {
+        inter = 0;
         kart_control();
         serial_pkt_recieved = 0; //packet recieved
-        inter = false;
     }
 }
