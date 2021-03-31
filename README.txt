@@ -6,9 +6,19 @@ For information setting up the arduino DUE the official guide can be found here:
 Basics:
 1) plug the Arduino into your pc with the port closest to the DC input
 2) navigate in the Arduino IDE to tools>Board>Boards Manager
-![Alt text](https://github.com/Autonomous-Motorsports-Purdue/AMP_MCUv1/blob/LoganDev/Documentation/BoardManager.png?raw=true)
-![alt text](https://github.com/Autonomous-Motorsports-Purdue/AMP_MCUv1/blob/d19106e8b4195177b46bcee4f507523b580a3cad/Documentation/BoardManager.png)
 3) Search DUE and install the package that says: Arduino SAM Boards
 
 After that navigate to tools>Board>Arduino ARM boards>DUE programming port
+
+You will also need to manually tell windows to download the Driver for the DUE.
+Following the guide in the link above is best but for a quick overview:
+1) Click on the Start Menu and open the Control Panel
+2) Navigate to "System and Security". Click on System, and open the Device Manager
+3) Look for the listing named "Ports (COM & LPT)". You should see an open port named "Arduino Due Prog. Port"
+4) Right click on the "Arduino Due Prog. Port" and choose "Update Driver Software"
+5) Select the "Browse my computer for Driver software" option
+6) Navigate to the folder with the Arduino IDE you downloaded and unzipped earlier. Locate and select the "Drivers" folder in the main Arduino folder (not the "FTDI USB Drivers" sub-directory). Press "OK" and "Next" to proceed
+7) If you are prompted with a warning dialog about not passing Windows Logo testing, click "Continue Anyway"
+8) Windows now will take over the driver installation
+9) You have installed the driver on your computer. In the Device Manager, you should now see a port listing similar to "Arduino Due Programming Port (COM4)"
 And you should be good to go!
