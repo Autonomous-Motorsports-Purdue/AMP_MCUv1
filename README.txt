@@ -8,3 +8,5 @@ Basics:
 2) navigate in the Arduino IDE to tools>Board>Boards Manager
 3) Search DUE and install the package that says: Arduino SAM Boards
 
+After that navigate to tools>Board>Arduino ARM boards>DUE programming port
+And you should be good to go!
