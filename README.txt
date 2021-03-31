@@ -6,6 +6,7 @@ For information setting up the arduino DUE the official guide can be found here:
 Basics:
 1) plug the Arduino into your pc with the port closest to the DC input
 2) navigate in the Arduino IDE to tools>Board>Boards Manager
+![alt text](https://github.com/Autonomous-Motorsports-Purdue/AMP_MCUv1/blob/d19106e8b4195177b46bcee4f507523b580a3cad/Documentation/BoardManager.png)
 3) Search DUE and install the package that says: Arduino SAM Boards
 
 After that navigate to tools>Board>Arduino ARM boards>DUE programming port
