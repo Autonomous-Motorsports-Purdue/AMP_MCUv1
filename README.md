@@ -1,3 +1,4 @@
+## Setting up the arduino DUE 
 You will need to take the two master files and move them to the same directory that the AMP_MCUv1 is in.
 tc_lib-master, and pwm_lib-master
 
@@ -7,6 +8,10 @@ Basics:
 1) plug the Arduino into your pc with the port closest to the DC input
 2) navigate in the Arduino IDE to tools>Board>Boards Manager
 3) Search DUE and install the package that says: Arduino SAM Boards
+
+![Board Manager](Documentation/BoardManager.png)
+
+![The Package to be installed](Documentation/Package.png)
 
 After that navigate to tools>Board>Arduino ARM boards>DUE programming port
 
@@ -22,3 +27,17 @@ Following the guide in the link above is best but for a quick overview:
 8) Windows now will take over the driver installation
 9) You have installed the driver on your computer. In the Device Manager, you should now see a port listing similar to "Arduino Due Programming Port (COM4)"
 And you should be good to go!
+
+## Setting up Libraries
+There are 3 libraries you need to add to your arduino IDE
+1) DueTimer-master
+2) pwm_lib-master
+3) tc_lib-master
+
+Find all three of these and move them to your arduino libraries folder
+
+![Libraries that need to be added](Documentation/libs.png)
+
+![Arduino libraries folder](Documentation/more_libs.png)
+
+That should be it!
