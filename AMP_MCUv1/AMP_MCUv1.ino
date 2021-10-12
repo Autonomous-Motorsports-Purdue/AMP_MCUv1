@@ -36,7 +36,7 @@ void loop()
         handleRxChar(); //deal with the incoming data
         if(!connection)
         {
-            start_Interrupt();
+            //start_Interrupt();
             connection = 1;
         }
     }
