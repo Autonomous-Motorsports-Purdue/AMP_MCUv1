@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 # Wiki
 To find documentation for the code found in this repository head to the Electrical Documentation Wiki here: https://github.com/Autonomous-Motorsports-Purdue/Electrical_Documentation/wiki
 
->>>>>>> 23d2d485b0c4b318601ec03a5879002913de6334
-=======
-# Wiki
-To find documentation for the code found in this repository head to the Electrical Documentation Wiki here: https://github.com/Autonomous-Motorsports-Purdue/Electrical_Documentation/wiki
-
->>>>>>> 23d2d485b0c4b318601ec03a5879002913de6334
 ## Setting up the arduino DUE 
 You will need to take the two master files and move them to the same directory that the AMP_MCUv1 is in.
 tc_lib-master, and pwm_lib-master
