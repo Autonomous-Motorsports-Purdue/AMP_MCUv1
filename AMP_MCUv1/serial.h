@@ -19,7 +19,6 @@ const uint8_t RESET_SERIAL_STATE = 0xdd;
 const uint8_t DATA_LEN_1 = 0xe1;
 const uint8_t DATA_LEN_2 = 0xe2;
 const uint8_t DATA_LEN_3 = 0xe3;
-const uint8_t TIME_OUT = 25;
 
 //serial data byte buffers
 uint8_t serial_id_buf; //holds incoming packet id
@@ -28,9 +27,6 @@ uint8_t brake_buf;     //holds incoming breaking data
 uint8_t throttle_buf;  //holds incoming throttle data
 uint8_t steering_buf;  //holds incoming steering data
 uint8_t serial_crc;
-unsigned int crc;
-unsigned int attempt;
-unsigned int lost_packets = 0;
 
 uint8_t serial_pkt_recieved; //flag to indicate new serial packet
 
@@ -38,14 +34,13 @@ enum SERIAL_STATE
 {
     DEFAULT_STATE = 0,
     ID_SEEKING = 1,
-    HARD_KILL_STATE = 2,
+    KILL_STATE = 2,
     DATA_LEN_SEEKING = 3,
     BRAKE_DATA_SEEKING = 4,
     THROTTLE_DATA_SEEKING = 5,
     STEERING_DATA_SEEKING = 6,
     CRC_SEEKING = 7,
-    STOP_SEEKING = 8,
-    SOFT_KILL_STATE = 9
+    STOP_SEEKING = 8
 };
 
 SERIAL_STATE cur_serial_state;
@@ -73,19 +68,16 @@ void restart_serial()
 
     //clear crc
     serial_crc = 0;
-    crc = 0;
 
     //set serial pkt recieved flag
     serial_pkt_recieved = 1;
 
     //reset the state to default
     cur_serial_state = DEFAULT_STATE;
-    attempt = 0;
 }
 
 void sendUpStream()
 {
-    Serial.println("printing");
     SerialUSB.write(START_BYTE);
     switch(serial_id_buf)
     {
@@ -123,8 +115,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
 {
     //NeoSerial.println(cmd); //echoback serial for debugging
     int cmd = SerialUSB.read();
-    Serial.println(cmd,HEX);
-    //Serial.println(serial_crc);
+    //SerialUSB.println(cmd,HEX);
     int valid_cmd_byte = 0;
 
     switch (cur_serial_state)
@@ -132,157 +123,104 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case DEFAULT_STATE:
         if (cmd == START_BYTE)
         {
-            Serial.println("start");
             valid_cmd_byte = 1;
+            serial_crc += cmd;
             cur_serial_state = ID_SEEKING;
         }
         break;
     case ID_SEEKING:
-        if(attempt > TIME_OUT)
-        {
-            cur_serial_state = SOFT_KILL_STATE;
-            break;
-        }
-        attempt++;
         if (cmd == ID_ENABLE && req_kart_state_change(ENABLED))
         {
-            Serial.println("id_enable");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             serial_id_buf = ID_ENABLE;
             cur_serial_state = CRC_SEEKING;
-            attempt = 0;
         }
         else if (cmd == ID_CONTROL && cur_kart_state == ENABLED)
         {
-            Serial.println("id_control");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             serial_id_buf = ID_CONTROL;
             cur_serial_state = DATA_LEN_SEEKING;
-            attempt = 0;
         }
         else if (cmd == ID_KILL && req_kart_state_change(ERROR))
         {
-            Serial.println("id_kill");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             serial_id_buf = ID_KILL;
-            cur_serial_state = HARD_KILL_STATE;
-            attempt = 0;
+            cur_serial_state = KILL_STATE;
         }
         break;
-    case HARD_KILL_STATE:
+    case KILL_STATE:
         if (cmd == RESET_SERIAL_STATE)
         {
-            Serial.println("hard kill");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             cur_serial_state = DEFAULT_STATE;
         }
         break;
     case DATA_LEN_SEEKING:
-        if(attempt > TIME_OUT)
-        {
-            cur_serial_state = SOFT_KILL_STATE;
-            break;
-        }
-        attempt++;
         if (cmd == DATA_LEN_3)
         {
-            Serial.println("size 3");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             data_len_buf = DATA_LEN_3;
             cur_serial_state = BRAKE_DATA_SEEKING;
-            attempt = 0;
         }
         else if (cmd == DATA_LEN_2)
         {
-            Serial.println("size 2");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             data_len_buf = DATA_LEN_2;
             cur_serial_state = THROTTLE_DATA_SEEKING;
-            attempt = 0;
         }
         else if (cmd == DATA_LEN_1)
         {
-            Serial.println("size 1");
             valid_cmd_byte = 1;
-            crc += cmd & 0xff;
-            serial_crc = (uint8_t)crc;
+            serial_crc += cmd;
             data_len_buf = DATA_LEN_1;
             cur_serial_state = STEERING_DATA_SEEKING;
-            attempt = 0;
         }
         break;
     case BRAKE_DATA_SEEKING:
         valid_cmd_byte = 1;
-        crc += cmd & 0xff;
-        serial_crc = (uint8_t)crc;
+        serial_crc += cmd;
         brake_buf = cmd;
+        cur_serial_state = THROTTLE_DATA_SEEKING;
+        break;
     case THROTTLE_DATA_SEEKING:
         valid_cmd_byte = 1;
-        crc += cmd & 0xff;
-        serial_crc = (uint8_t)crc;
+        serial_crc += cmd;
         throttle_buf = cmd;
+        cur_serial_state = STEERING_DATA_SEEKING;
+        break;
     case STEERING_DATA_SEEKING:
         valid_cmd_byte = 1;
-        crc += cmd & 0xff;
-        serial_crc = (uint8_t)crc;
+        serial_crc += cmd;
         steering_buf = cmd;
         cur_serial_state = CRC_SEEKING;
         break;
     case CRC_SEEKING:
-        if(attempt > TIME_OUT)
+        if (cmd == serial_crc)
         {
-            Serial.println(attempt);
-            cur_serial_state = SOFT_KILL_STATE;
-            break;
-        }
-        attempt++;
-        if (cmd == (uint8_t)serial_crc)
-        {
-            Serial.println(cmd);
-            Serial.println("crc");
             valid_cmd_byte = 1;
             cur_serial_state = STOP_SEEKING;
-            attempt = 0;
         }
         break;
     case STOP_SEEKING:
-        if(attempt > TIME_OUT)
-        {
-            cur_serial_state = SOFT_KILL_STATE;
-            break;
-        }
-        attempt++;
         if (cmd == STOP_BYTE)
         {
-            Serial.println("stop");
             valid_cmd_byte = 1;
             restart_serial();
         }
         break;
-    case SOFT_KILL_STATE:
-        Serial.println("soft kill");
-        cur_serial_state = DEFAULT_STATE;
-        attempt = 0;
-        lost_packets++;
     }
     //SerialUSB.print("serial state: ");
     //SerialUSB.println(cur_serial_state);
 
     if (!valid_cmd_byte)
     {
-        cur_serial_state = HARD_KILL_STATE;
+        cur_serial_state = KILL_STATE;
     }
 }
 
@@ -294,15 +232,13 @@ bool serial_init()
     throttle_buf = 0;
     steering_buf = 0;
     serial_id_buf = 0;
-    attempt = 0;
     
-    SerialUSB.begin(4800);
-    Serial.begin(4800);
+    //SerialUSB.begin(4800);
     while(!SerialUSB)
     {
-      Serial.println("waiting"); // wait for Serial prt to connect. Needed for native USB
+      ; // wait for Serial prt to connect. Needed for native USB
     }
-    //Serial.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
+    //SerialUSB.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
 //  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 
 //    NeoSerial.attachInterrupt(handleRxChar);
