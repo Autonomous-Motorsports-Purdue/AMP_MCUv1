@@ -1,4 +1,10 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+# Wiki
+To find documentation for the code found in this repository head to the Electrical Documentation Wiki here: https://github.com/Autonomous-Motorsports-Purdue/Electrical_Documentation/wiki
+
+>>>>>>> 23d2d485b0c4b318601ec03a5879002913de6334
 =======
 # Wiki
 To find documentation for the code found in this repository head to the Electrical Documentation Wiki here: https://github.com/Autonomous-Motorsports-Purdue/Electrical_Documentation/wiki
