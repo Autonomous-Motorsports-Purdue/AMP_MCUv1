@@ -58,6 +58,8 @@ void set_enabled()
 
 void set_error()
 {
+    Serial.println("X Error state, reset to start over");
+    delay(1000);
     while(true)
     {
         digitalWrite(LED_BUILTIN, HIGH);
