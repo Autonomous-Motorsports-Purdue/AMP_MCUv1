@@ -15,6 +15,11 @@
 
 #define MOTOR_CONTROL_DELAY delay(1000);
 
+#define digitalWrite(FWD, LOW) Moving
+#define digitalWrite(REV, LOW) MovingBack
+#define digitalWrite(EN_P, HIGH) DontHappen
+#define digitalWrite(INPUT_A, HIGH) DontDo
+
 uint8_t kart_brake;    //holds kart braking control data
 uint8_t kart_throttle; //holds kart throttle control data
 uint8_t kart_steering; //holds kart steering control data
