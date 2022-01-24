@@ -27,6 +27,8 @@ uint8_t brake_buf;     //holds incoming breaking data
 uint8_t throttle_buf;  //holds incoming throttle data
 uint8_t steering_buf;  //holds incoming steering data
 uint8_t serial_crc;
+unsigned int attempt;
+unsigned int lost_packets = 0;
 
 uint8_t serial_pkt_recieved; //flag to indicate new serial packet
 
@@ -53,7 +55,7 @@ void restart_serial()
     kart_steering = steering_buf;
 
     //send the recieved data back to the jetson
-    sendUpStream();
+    //sendUpStream();
 
    //notify kart to update control
     if(serial_id_buf == ID_CONTROL)
@@ -78,6 +80,7 @@ void restart_serial()
 
 void sendUpStream()
 {
+    //Serial.println("printing");
     SerialUSB.write(START_BYTE);
     switch(serial_id_buf)
     {
@@ -113,9 +116,10 @@ void sendUpStream()
 //and not the cur_kart_state variable (easy to confuse maybe rename)
 void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
 {
-    //NeoSerial.println(cmd); //echoback serial for debugging
+    //Neo//Serial.println(cmd); //echoback serial for debugging
     int cmd = SerialUSB.read();
-    //SerialUSB.println(cmd,HEX);
+    //Serial.println(cmd,HEX);
+    ////Serial.println(serial_crc);
     int valid_cmd_byte = 0;
 
     switch (cur_serial_state)
@@ -123,6 +127,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case DEFAULT_STATE:
         if (cmd == START_BYTE)
         {
+            //Serial.println("start");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             cur_serial_state = ID_SEEKING;
@@ -131,6 +136,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case ID_SEEKING:
         if (cmd == ID_ENABLE && req_kart_state_change(ENABLED))
         {
+            //Serial.println("id_enable");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             serial_id_buf = ID_ENABLE;
@@ -138,6 +144,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         }
         else if (cmd == ID_CONTROL && cur_kart_state == ENABLED)
         {
+            //Serial.println("id_control");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             serial_id_buf = ID_CONTROL;
@@ -145,6 +152,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         }
         else if (cmd == ID_KILL && req_kart_state_change(ERROR))
         {
+            //Serial.println("id_kill");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             serial_id_buf = ID_KILL;
@@ -154,6 +162,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case KILL_STATE:
         if (cmd == RESET_SERIAL_STATE)
         {
+            //Serial.println("hard kill");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             cur_serial_state = DEFAULT_STATE;
@@ -162,6 +171,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case DATA_LEN_SEEKING:
         if (cmd == DATA_LEN_3)
         {
+            //Serial.println("size 3");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             data_len_buf = DATA_LEN_3;
@@ -169,6 +179,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         }
         else if (cmd == DATA_LEN_2)
         {
+            //Serial.println("size 2");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             data_len_buf = DATA_LEN_2;
@@ -176,13 +187,14 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         }
         else if (cmd == DATA_LEN_1)
         {
+            //Serial.println("size 1");
             valid_cmd_byte = 1;
             serial_crc += cmd;
             data_len_buf = DATA_LEN_1;
             cur_serial_state = STEERING_DATA_SEEKING;
         }
         break;
-    case BRAKE_DATA_SEEKING:
+    case BRAKE_DATA_SEEKING: //could make this fall through
         valid_cmd_byte = 1;
         serial_crc += cmd;
         brake_buf = cmd;
@@ -201,6 +213,20 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         cur_serial_state = CRC_SEEKING;
         break;
     case CRC_SEEKING:
+        //Serial.println("cmd: , serial_crc: ");
+        //Serial.println(cmd);
+        //Serial.println(serial_crc);
+        if(attempt > TIME_OUT)
+        {
+            //Serial.println(attempt);
+            cur_serial_state = SOFT_KILL_STATE;
+            break;
+        }
+        attempt++;
+        if (cmd == serial_crc)
+        {
+            //Serial.println(cmd);
+            //Serial.println("crc");
         if (cmd == serial_crc)
         {
             valid_cmd_byte = 1;
@@ -210,10 +236,16 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     case STOP_SEEKING:
         if (cmd == STOP_BYTE)
         {
+            //Serial.println("stop");
             valid_cmd_byte = 1;
             restart_serial();
         }
         break;
+    case SOFT_KILL_STATE:
+        //Serial.println("soft kill");
+        cur_serial_state = DEFAULT_STATE;
+        attempt = 0;
+        lost_packets++;
     }
     //SerialUSB.print("serial state: ");
     //SerialUSB.println(cur_serial_state);
@@ -236,9 +268,9 @@ bool serial_init()
     //SerialUSB.begin(4800);
     while(!SerialUSB)
     {
-      ; // wait for Serial prt to connect. Needed for native USB
+      //Serial.println("waiting"); // wait for Serial prt to connect. Needed for native USB
     }
-    //SerialUSB.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
+    ////Serial.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
 //  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 
 //    NeoSerial.attachInterrupt(handleRxChar);
