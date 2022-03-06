@@ -31,7 +31,7 @@ Following the guide in the link above is best but for a quick overview:
 9) You have installed the driver on your computer. In the Device Manager, you should now see a port listing similar to "Arduino Due Programming Port (COM4)"
 And you should be good to go!
 
-## Setting up Libraries
+## Setting up Libraries (LEGACY)
 There are 3 libraries you need to add to your arduino IDE
 1) DueTimer-master
 2) pwm_lib-master
