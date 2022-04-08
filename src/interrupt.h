@@ -1,24 +1,20 @@
-#ifndef KART_H
-#define KART_H
+#ifndef INTERRUPT_H
+#define INTERRUPT_H
 
 #include "serial.h"
 #include "kart.h"
 
-#include "DueTimer.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
-int pl = 0;
+
 bool inter = false;
+int timeOut = 2; //number of seconds witout a packet until error state
+IntervalTimer myTimer;
 
 void check_Serial()
 {
-/*
-    if(pl < 10)
-      digitalWrite(13, HIGH);
-    else
-      digitalWrite(13, LOW);//after 5 seconds write the LED low
-    pl++;
 
-*/
     if(inter == true)
     {
         set_error();
@@ -30,10 +26,12 @@ void check_Serial()
     //return 1;
 }
 
-void (*check_ptr)() = &check_Serial;
 
 void start_Interrupt()
 {
-    Timer3.attachInterrupt(check_ptr).start(5000000);//5 second interrupt
+
+    myTimer.begin(check_Serial, timeOut*1000000);
+
+    //Timer3.attachInterrupt(check_ptr).start(5000000);//5 second interrupt
 }
-#ENDIF
+#endif

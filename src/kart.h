@@ -10,8 +10,6 @@
 //#define KS1   //Key Switch
 #define FWD 29     //Forward
 #define REV 53     //Reverse
-#define EN_P 47    //Enable DONT USE THIS
-#define INPUT_A 41 //input a for steeering motor DONT USE THIS
 
 #define MOTOR_CONTROL_DELAY delay(1000);
 
@@ -40,8 +38,6 @@ void set_idle()
     //    digitalWrite(KS1, LOW);
     digitalWrite(FWD, LOW);
     digitalWrite(REV, LOW);
-    digitalWrite(EN_P, HIGH);
-    digitalWrite(INPUT_A, HIGH);
     set_brake_raw(255);
 }
 
@@ -49,8 +45,6 @@ void set_enabled()
 {
     digitalWrite(FS1, HIGH);
     digitalWrite(REV, LOW);
-    digitalWrite(EN_P, LOW);
-    digitalWrite(INPUT_A, HIGH);
     //    digitalWrite(KS1, HIGH);
     MOTOR_CONTROL_DELAY
     digitalWrite(FWD, HIGH);
@@ -67,8 +61,6 @@ void set_error()
         //    digitalWrite(KS1, HIGH);
         digitalWrite(FWD, LOW);
         digitalWrite(REV, LOW);
-        digitalWrite(EN_P, LOW);
-        digitalWrite(INPUT_A, LOW);
         set_brake_raw(255);
         set_throttle_raw(0);
         set_steering_raw(255 / 2);
@@ -82,8 +74,6 @@ bool kart_init()
     pinMode(FS1, OUTPUT);
     pinMode(FWD, OUTPUT);
     pinMode(REV, OUTPUT);
-    pinMode(EN_P, OUTPUT);
-    pinMode(INPUT_A, OUTPUT);
 
     set_idle();
   

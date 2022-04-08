@@ -1,7 +1,7 @@
 #ifndef THROTTLE_H
 #define THROTTLE_H
 
-#define DAC_PIN DAC0 //DAC output
+#define DAC_PIN 6 //DAC output
 
 #define THROTTLE_PACKET_MAX 255 //max value expected from Jetson
 #define THROTTLE_PACKET_MIN 0   //min value expected form Jetson

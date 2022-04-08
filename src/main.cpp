@@ -43,7 +43,9 @@ void loop()
 
     if (control_flag)
     {
+        noInterrupts();
         inter = 0;
+        interrupts();
         kart_control();
         serial_pkt_recieved = 0; //packet recieved
     }

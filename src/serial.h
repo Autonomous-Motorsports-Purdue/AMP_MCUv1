@@ -216,17 +216,13 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
         //Serial.println("cmd: , serial_crc: ");
         //Serial.println(cmd);
         //Serial.println(serial_crc);
-        if(attempt > TIME_OUT)
-        {
-            //Serial.println(attempt);
-            cur_serial_state = SOFT_KILL_STATE;
-            break;
-        }
+        
         attempt++;
         if (cmd == serial_crc)
         {
             //Serial.println(cmd);
             //Serial.println("crc");
+        }
         if (cmd == serial_crc)
         {
             valid_cmd_byte = 1;
@@ -241,12 +237,9 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
             restart_serial();
         }
         break;
-    case SOFT_KILL_STATE:
-        //Serial.println("soft kill");
-        cur_serial_state = DEFAULT_STATE;
-        attempt = 0;
-        lost_packets++;
+
     }
+    
     //SerialUSB.print("serial state: ");
     //SerialUSB.println(cur_serial_state);
 
@@ -256,8 +249,7 @@ void handleRxChar() //WAS: static void handleRxChar(uint8_t cmd) with neo serial
     }
 }
 
-bool serial_init()
-{
+bool serial_init() {
     cur_serial_state = DEFAULT_STATE;
     serial_crc = 0;
     brake_buf = 0;
@@ -266,10 +258,10 @@ bool serial_init()
     serial_id_buf = 0;
     
     //SerialUSB.begin(4800);
-    while(!SerialUSB)
-    {
+    //while(!SerialUSB)
+    //{
       //Serial.println("waiting"); // wait for Serial prt to connect. Needed for native USB
-    }
+    //}
     ////Serial.println("Serial Connected at 4800"); //Prints that the Serial is connected after a connection is established.
 //  analogWriteResolution(12); //Sets the analog resolution to 12 bits (0 - 4095)
 

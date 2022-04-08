@@ -1,13 +1,6 @@
 #ifndef STEERING_H
 #define STEERING_H
 
-#include "pwm_lib.h"
-#include "tc_lib.h"
-
-using namespace arduino_due::pwm_lib;
-
-pwm<pwm_pin::PWMH5_PC19> pwm_pin44; //steering pin is 44
-
 // 1kHz (left)
 // 3kHz (center)
 // 5kHz (right)
@@ -33,15 +26,14 @@ bool set_steering_raw(int steeringRequest)
 
     int steeringCommand = map(steeringRequest, 0, 255, 1000, 5000);
 
-    uint32_t periodCommand = (100000000.0/steeringCommand);
-
-  pwm_pin44.set_period_and_duty(periodCommand,periodCommand/2);
+    tone(5, steeringCommand);
 
   return true; 
 }
 
 void steering_init() {
-      pwm_pin44.start(33333,33333/2); //center the steering
+
+      pinMode(5, OUTPUT);
 }
 
 #endif /* STEERING_H */
